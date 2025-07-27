@@ -2,7 +2,7 @@ import 'package:expense_tracker_app_fl/components/shared/AuthButtton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyIconButton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyInputField.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracker_app_fl/statemanager/auth_provider.dart';
+import 'package:expense_tracker_app_fl/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +28,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginControllerProvider);
-
+    ref.listen<AsyncValue<void>>(loginControllerProvider, (previous, next) {
+      next.whenOrNull(
+        data: (_) {
+          context.go('/main');
+        },
+        error: (err, _) {
+        },
+      );
+    });
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(

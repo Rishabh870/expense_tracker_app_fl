@@ -2,7 +2,7 @@ import 'package:expense_tracker_app_fl/components/shared/AuthButtton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyIconButton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyInputField.dart';
 import 'package:expense_tracker_app_fl/constant/colors.dart';
-import 'package:expense_tracker_app_fl/statemanager/auth_provider.dart';
+import 'package:expense_tracker_app_fl/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
