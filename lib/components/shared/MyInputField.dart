@@ -1,34 +1,82 @@
+import 'package:expense_tracker_app_fl/core/constant/colors.dart';
 import 'package:flutter/material.dart';
 
-class MyInputField extends StatelessWidget {
+class InputField extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final TextInputType keyboardType;
+  final bool isPassword;
+  final String? fieldButtonLabel;
+  final VoidCallback? fieldButtonFunction;
   final TextEditingController controller;
-  final String hintText;
-  final bool obscureText;
-  final IconData? icon;
 
-  const MyInputField({
+  const InputField({
     super.key,
+    required this.label,
+    required this.icon,
+    this.keyboardType = TextInputType.text,
+    this.isPassword = false,
+    this.fieldButtonLabel,
+    this.fieldButtonFunction,
     required this.controller,
-    required this.hintText,
-    this.obscureText = false,
-    this.icon,
   });
 
   @override
+  State<InputField> createState() => _InputFieldState();
+}
+
+class _InputFieldState extends State<InputField> {
+  bool isFocused = false;
+
+  @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        prefixIcon: icon != null ? Icon(icon, color: Colors.grey[600]) : null,
-        hintText: hintText,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+    final borderColor = isFocused ? AppColors.primary : Colors.black;
+    final iconColor = isFocused ? AppColors.primary : Colors.grey.shade600;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: borderColor,
+            width: isFocused ? 2 : 1,
+          ),
         ),
-        filled: true,
-        fillColor: Colors.white,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(widget.icon, color: iconColor),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Focus(
+              onFocusChange: (focus) => setState(() => isFocused = focus),
+              child: TextField(
+                controller: widget.controller,
+                keyboardType: widget.keyboardType,
+                obscureText: widget.isPassword,
+                decoration: InputDecoration(
+                  hintText: widget.label,
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.grey.shade500),
+                ),
+                style: const TextStyle(color: Colors.black, fontSize: 16),
+              ),
+            ),
+          ),
+          if (widget.fieldButtonLabel != null &&
+              widget.fieldButtonFunction != null)
+            GestureDetector(
+              onTap: widget.fieldButtonFunction,
+              child: Text(
+                widget.fieldButtonLabel!,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:expense_tracker_app_fl/components/shared/AuthButtton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyIconButton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyInputField.dart';
+import 'package:expense_tracker_app_fl/core/constant/colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracker_app_fl/core/statemanager/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -43,39 +44,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: TextStyle(color: Colors.grey[700], fontSize: 16),
                 ),
                 const SizedBox(height: 25),
-                MyInputField(
-                  controller: usernameController,
-                  hintText: 'Username',
+                InputField(
+                  label: 'Username',
                   icon: Icons.person,
+                  controller: usernameController,
                 ),
                 const SizedBox(height: 10),
-                MyInputField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
+                InputField(
+                  label: 'Password',
                   icon: Icons.lock,
-                ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
+                  isPassword: true,
+                  controller: passwordController,
+                  fieldButtonLabel: 'Forgot?',
+                  fieldButtonFunction: () => {},
                 ),
                 const SizedBox(height: 25),
                 loginState.when(
-                  data: (_) => MyButton(onTap: signUserIn, label: "Login"),
+                  data: (_) => AuthButoon(onTap: signUserIn, label: "Login"),
                   loading: () => const CircularProgressIndicator(),
                   error: (e, _) => Column(
                     children: [
                       Text('⚠️ $e', style: const TextStyle(color: Colors.red)),
                       const SizedBox(height: 10),
-                      MyButton(onTap: signUserIn, label: "Login"),
+                      AuthButoon(onTap: signUserIn, label: "Login"),
                     ],
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     const Expanded(child: Divider(thickness: 0.5)),
@@ -116,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: const Text(
                         'Register now',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

@@ -1,6 +1,7 @@
 import 'package:expense_tracker_app_fl/components/shared/AuthButtton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyIconButton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyInputField.dart';
+import 'package:expense_tracker_app_fl/core/constant/colors.dart';
 import 'package:expense_tracker_app_fl/core/statemanager/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,34 +48,33 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   style: TextStyle(color: Colors.grey[700], fontSize: 16),
                 ),
                 const SizedBox(height: 25),
-                MyInputField(
-                  controller: usernameController,
-                  hintText: 'Username',
+                InputField(
+                  label: 'Username',
                   icon: Icons.person,
+                  controller: usernameController,
                 ),
                 const SizedBox(height: 10),
-                MyInputField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
+                InputField(
+                  label: 'Email',
                   icon: Icons.mail,
+                  controller: emailController,
                 ),
                 const SizedBox(height: 10),
-                MyInputField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
+                InputField(
+                  label: 'Password',
                   icon: Icons.lock,
+                  isPassword: true,
+                  controller: passwordController,
                 ),
                 const SizedBox(height: 25),
                 loginState.when(
-                  data: (_) => MyButton(onTap: signUserIn, label: "Register"),
+                  data: (_) => AuthButoon(onTap: signUserIn, label: "Register"),
                   loading: () => const CircularProgressIndicator(),
                   error: (e, _) => Column(
                     children: [
                       Text('⚠️ $e', style: const TextStyle(color: Colors.red)),
                       const SizedBox(height: 10),
-                      MyButton(onTap: signUserIn, label: "Register"),
+                      AuthButoon(onTap: signUserIn, label: "Register"),
                     ],
                   ),
                 ),
@@ -119,7 +119,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       child: const Text(
                         'Login',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

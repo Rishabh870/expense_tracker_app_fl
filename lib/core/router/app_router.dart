@@ -1,4 +1,5 @@
 import 'package:expense_tracker_app_fl/screens/auth/LoginScreen.dart';
+import 'package:expense_tracker_app_fl/screens/auth/OnboardingScreen.dart';
 import 'package:expense_tracker_app_fl/screens/auth/OtpScreen.dart';
 import 'package:expense_tracker_app_fl/screens/auth/RegisterScreen.dart';
 import 'package:expense_tracker_app_fl/screens/main/MainScreen.dart';
@@ -6,8 +7,13 @@ import 'package:go_router/go_router.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/main',
+    initialLocation: '/onboarding',
     routes: [
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboardingscreen',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
       GoRoute(
         path: '/login',
         name: 'login',

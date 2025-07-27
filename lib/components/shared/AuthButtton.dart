@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracker_app_fl/core/constant/colors.dart'; // if using custom colors
 
-class MyButton extends StatelessWidget {
-  final Function()? onTap;
+class AuthButoon extends StatelessWidget {
+  final VoidCallback? onTap;
   final String label;
 
-  const MyButton({super.key, required this.onTap, required this.label});
+  const AuthButoon({
+    super.key,
+    required this.onTap,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(25),
-        margin: const EdgeInsets.symmetric(horizontal: 25),
+        margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
         decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(8),
+          color: AppColors.primary, // or Colors.black if not using theme
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
               fontSize: 16,
             ),
           ),
