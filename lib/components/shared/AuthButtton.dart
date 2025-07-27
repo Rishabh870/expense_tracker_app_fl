@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracker_app_fl/core/constant/colors.dart'; // if using custom colors
+
+import '../../constant/colors.dart';
+
+
+ // if using custom colors
 
 class AuthButoon extends StatelessWidget {
   final VoidCallback? onTap;

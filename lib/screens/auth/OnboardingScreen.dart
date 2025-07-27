@@ -1,7 +1,7 @@
 import 'package:expense_tracker_app_fl/components/shared/AuthButtton.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:expense_tracker_app_fl/core/constant/colors.dart';
+import 'package:expense_tracker_app_fl/constant/colors.dart';
 import 'package:go_router/go_router.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -25,7 +25,7 @@ class OnboardingScreen extends StatelessWidget {
             // 🎞️ Lottie Banner
             Expanded(
               child: Lottie.asset(
-                'assets/animations/banner.json',
+                'lib/assets/animations/banner.json',
                 repeat: true,
                 fit: BoxFit.contain,
               ),

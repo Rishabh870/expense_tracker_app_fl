@@ -1,5 +1,6 @@
-import 'package:expense_tracker_app_fl/core/constant/colors.dart';
 import 'package:flutter/material.dart';
+
+import '../../constant/colors.dart';
 
 class InputField extends StatefulWidget {
   final String label;
@@ -70,7 +71,7 @@ class _InputFieldState extends State<InputField> {
               onTap: widget.fieldButtonFunction,
               child: Text(
                 widget.fieldButtonLabel!,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),

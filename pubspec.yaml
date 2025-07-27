@@ -46,6 +46,8 @@ dependencies:
   super_cupertino_navigation_bar: ^2.1.2
   curved_labeled_navigation_bar: ^2.0.6
   lottie: ^3.2.0
+  flutter_svg: ^2.2.0
+
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +76,8 @@ flutter:
     - lib/assets/images/otp.png
     - lib/assets/images/otp2.png
     - lib/assets/animations/banner.json
+
+    - assets/icons/IconShoppingCart.svg
 
   #   - images/a_dot_ham.jpeg
 

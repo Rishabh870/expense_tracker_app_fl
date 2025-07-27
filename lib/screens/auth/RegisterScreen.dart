@@ -1,8 +1,8 @@
 import 'package:expense_tracker_app_fl/components/shared/AuthButtton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyIconButton.dart';
 import 'package:expense_tracker_app_fl/components/shared/MyInputField.dart';
-import 'package:expense_tracker_app_fl/core/constant/colors.dart';
-import 'package:expense_tracker_app_fl/core/statemanager/auth_provider.dart';
+import 'package:expense_tracker_app_fl/constant/colors.dart';
+import 'package:expense_tracker_app_fl/statemanager/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -96,7 +96,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   children: [
                     MyIconButton(
                       label: 'Google',
-                      icon: Image.asset('lib/images/google.png', height: 20),
+                      icon: Image.asset('lib/assets/images/google.png', height: 20),
                       onTap: () {
                         // TODO: Google Sign In
                       },
