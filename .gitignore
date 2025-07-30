@@ -1,33 +1,66 @@
-# Gradle files
-.gradle/
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
 build/
+flutter_*.png
 
-# Local configuration file (sdk path, etc)
-local.properties
+# Environment & Config
+.env
+.env.*
+*.pem
 
-# Log/OS Files
-*.log
+# iOS/macOS
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/ServiceDefinitions.json
+ios/Runner.xcworkspace/
+ios/Pods/
+ios/Podfile.lock
+macos/Flutter/Flutter.podspec
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Pods/
+macos/Podfile.lock
+macos/Runner.xcworkspace/
 
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
+# Web
+web/.dart_tool/
+web/build/
+
+# Android
+android/.gradle/
+android/app/build/
+android/captures/
+android/.idea/
+android/local.properties
+android/.externalNativeBuild/
+android/.cxx/
 *.apk
-output.json
+*.ap_
 
-# IntelliJ
+# VS Code
+.vscode/
+.history/
+
+# IntelliJ/Android Studio
 *.iml
 .idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+*.ipr
+*.iws
 
-# Keystore files
+# Firebase / Google Services
+google-services.json
+firebase-debug.log
+
+# Misc
+*.log
+*.hprof
+*.lock
+*.DS_Store
 *.jks
 *.keystore
 
-# Google Services (e.g. APIs or Firebase)
-google-services.json
-
-# Android Profiling
-*.hprof
+# Coverage
+coverage/
+lcov.info

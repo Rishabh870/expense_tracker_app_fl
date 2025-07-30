@@ -6,8 +6,8 @@ class TokenManager {
   static const _refreshTokenKey = 'refresh_token';
 
   // You must keep this key secure and dynamic in real production
-  static final _key = Key.fromUtf8('ejf89iju4rjij3584df');
-  static final _iv = IV.fromLength(8);
+  static final _key = Key.fromUtf8('ejf89iju4rjij358'); // 16 chars ✅
+  static final _iv = IV.fromLength(16); // 16 bytes ✅
   static final _encrypter = Encrypter(AES(_key));
 
   static Future<void> storeTokens(

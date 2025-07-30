@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/auth_service.dart'; // import your AuthService
+import './token_manager.dart';
 
 final loginControllerProvider =
 StateNotifierProvider<LoginController, AsyncValue<void>>(
@@ -23,6 +24,11 @@ class LoginController extends StateNotifier<AsyncValue<void>> {
     try {
       final authService = ref.read(authServiceProvider);
       final response = await authService.login(username, password);
+      final data = response.data;
+      await TokenManager.storeTokens(
+        data['accessToken'].toString(),
+        data['refreshToken'].toString(),
+      );
       log(response.data.toString());
       state = const AsyncData(null);
     } catch (e, st) {

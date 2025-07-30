@@ -14,8 +14,8 @@ class ExpenseScreen extends StatelessWidget {
           TabBar(
             labelColor: Colors.black,
             tabs: [
-              Tab(text: 'Unbilled Expenses'),
               Tab(text: 'Expenses'),
+              Tab(text: 'Unbilled Expenses'),
             ],
           ),
           Expanded(
