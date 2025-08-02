@@ -1,3 +1,4 @@
+import 'package:expense_tracker_app_fl/screens/main/ExpenseScreens/AddExpenseSheet.dart';
 import 'package:expense_tracker_app_fl/screens/main/SettlementScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
@@ -19,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     ExpenseScreen(),
-    SettlementScreen(), // Replace with your real profile screen
+    SettlementScreen(),
     SettingScreen(),
   ];
 
@@ -42,6 +43,7 @@ class _MainScreenState extends State<MainScreen> {
       setState(() => _selectedIndex = index);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +70,11 @@ class _MainScreenState extends State<MainScreen> {
         animationDuration: const Duration(milliseconds: 300),
         height: 60,
         index: _selectedIndex,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showCustomFormModal(context),
+        backgroundColor: Colors.black,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

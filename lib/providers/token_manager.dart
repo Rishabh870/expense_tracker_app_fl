@@ -7,7 +7,7 @@ class TokenManager {
 
   // You must keep this key secure and dynamic in real production
   static final _key = Key.fromUtf8('ejf89iju4rjij358'); // 16 chars ✅
-  static final _iv = IV.fromLength(16); // 16 bytes ✅
+  static final _iv = IV.fromUtf8('ejf89iju4rjij358'); // 16 bytes ✅
   static final _encrypter = Encrypter(AES(_key));
 
   static Future<void> storeTokens(

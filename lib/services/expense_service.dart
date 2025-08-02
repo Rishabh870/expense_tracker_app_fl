@@ -11,7 +11,7 @@ class ExpenseService {
       return (res.data as List)
           .map((e) => Expense.fromJson(e))
           .toList();
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (kDebugMode) {
         print('Error fetching expenses: $e');
       }

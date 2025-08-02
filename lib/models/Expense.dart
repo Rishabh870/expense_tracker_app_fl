@@ -1,19 +1,20 @@
-import 'Category.dart';       // create this based on CategoryOut
+import 'package:expense_tracker_app_fl/models/SplitUser.dart';
+import 'Category.dart'; // Based on CategoryOut
 
 class SplitUserAmount {
-  final int person;
+  final SplitUser person;
   final double amount;
   final double paid;
 
   SplitUserAmount({
     required this.person,
-    this.amount =0,
+    this.amount = 0,
     this.paid = 0,
   });
 
   factory SplitUserAmount.fromJson(Map<String, dynamic> json) {
     return SplitUserAmount(
-      person: json['person'],
+      person: SplitUser.fromJson(json['person']),
       amount: (json['amount'] ?? 0).toDouble(),
       paid: (json['paid'] ?? 0).toDouble(),
     );
@@ -21,13 +22,12 @@ class SplitUserAmount {
 
   Map<String, dynamic> toJson() {
     return {
-      'person': person,
+      'person': person.toJson(),
       'amount': amount,
       'paid': paid,
     };
   }
 }
-
 
 class Expense {
   final int id;
@@ -37,7 +37,7 @@ class Expense {
   final double amount;
   final int? categoryId;
   final DateTime date;
-  final List<SplitUserAmount> splitUsers;
+  final List<SplitUserAmount> splits;
   final bool isSplit;
   final DateTime createdAt;
   final Category? category;
@@ -50,7 +50,7 @@ class Expense {
     required this.amount,
     this.categoryId,
     required this.date,
-    required this.splitUsers,
+    required this.splits,
     required this.isSplit,
     required this.createdAt,
     this.category,
@@ -65,7 +65,7 @@ class Expense {
       amount: (json['amount'] as num).toDouble(),
       categoryId: json['category_id'],
       date: DateTime.parse(json['date']),
-      splitUsers: (json['split_users'] as List<dynamic>?)
+      splits: (json['splits'] as List<dynamic>?)
           ?.map((e) => SplitUserAmount.fromJson(e))
           .toList() ??
           [],
@@ -75,5 +75,21 @@ class Expense {
           ? Category.fromJson(json['category'])
           : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'payer_id': payerId,
+      'title': title,
+      'amount': amount,
+      'category_id': categoryId,
+      'date': date.toIso8601String(),
+      'splits': splits.map((s) => s.toJson()).toList(),
+      'is_split': isSplit,
+      'created_at': createdAt.toIso8601String(),
+      'category': category,
+    };
   }
 }

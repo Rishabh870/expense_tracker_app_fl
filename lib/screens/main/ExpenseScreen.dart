@@ -1,5 +1,5 @@
 import 'package:expense_tracker_app_fl/screens/main/ExpenseScreens/BilledExpensesScreen.dart';
-import 'package:expense_tracker_app_fl/screens/main/ExpenseScreens/UnbilledExpensesScreen.dart';
+import 'package:expense_tracker_app_fl/screens/main/ExpenseScreens/UpcomingPaymentScreen.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseScreen extends StatelessWidget {
@@ -15,14 +15,14 @@ class ExpenseScreen extends StatelessWidget {
             labelColor: Colors.black,
             tabs: [
               Tab(text: 'Expenses'),
-              Tab(text: 'Unbilled Expenses'),
+              Tab(text: 'Upcoming Payment'),
             ],
           ),
           Expanded(
             child: TabBarView(
               children: [
                 BilledExpensesScreen(),
-                UnbilledExpensesScreen(),
+                UpcomingPaymentScreen(),
               ],
             ),
           ),

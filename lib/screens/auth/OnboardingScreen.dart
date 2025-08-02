@@ -1,11 +1,34 @@
 import 'package:expense_tracker_app_fl/components/shared/AuthButtton.dart';
+import 'package:expense_tracker_app_fl/providers/token_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:expense_tracker_app_fl/constant/colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkTokenAndRedirect();
+  }
+
+  Future<void> _checkTokenAndRedirect() async {
+    final accessToken = await TokenManager.getAccessToken();
+
+    if (!mounted) return; // ✅ Check before using context
+
+    if (accessToken != null && accessToken.isNotEmpty) {
+      context.go('/main'); // ✅ Safe now
+    }
+  }
 
   void _goToLogin(BuildContext context) {
     context.go('/login');
@@ -22,7 +45,6 @@ class OnboardingScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // 🎞️ Lottie Banner
             Expanded(
               child: Lottie.asset(
                 'lib/assets/animations/banner.json',
@@ -30,10 +52,7 @@ class OnboardingScreen extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
             ),
-
             const SizedBox(height: 40),
-
-            // 🔘 Buttons
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(

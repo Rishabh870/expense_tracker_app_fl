@@ -1,66 +1,29 @@
-# Flutter/Dart/Pub related
+# Flutter/Dart
 .dart_tool/
 .packages
 .pub-cache/
 build/
-flutter_*.png
-
-# Environment & Config
-.env
-.env.*
-*.pem
-
-# iOS/macOS
+.flutter-plugins
+.flutter-plugins-dependencies
+.idea/
+android/.gradle
+android/app/build
+ios/Pods/
 ios/Flutter/Flutter.framework
 ios/Flutter/Flutter.podspec
-ios/Flutter/Generated.xcconfig
-ios/ServiceDefinitions.json
-ios/Runner.xcworkspace/
-ios/Pods/
-ios/Podfile.lock
+macos/Flutter/Flutter.framework
 macos/Flutter/Flutter.podspec
-macos/Flutter/GeneratedPluginRegistrant.swift
-macos/Pods/
-macos/Podfile.lock
-macos/Runner.xcworkspace/
 
-# Web
-web/.dart_tool/
-web/build/
-
-# Android
-android/.gradle/
-android/app/build/
-android/captures/
-android/.idea/
-android/local.properties
-android/.externalNativeBuild/
-android/.cxx/
-*.apk
-*.ap_
-
-# VS Code
+# VSCode
 .vscode/
-.history/
 
-# IntelliJ/Android Studio
+# macOS
+.DS_Store
+
+# Windows
+*.exe
+*.dll
+*.pdb
+
+# Others
 *.iml
-.idea/
-*.ipr
-*.iws
-
-# Firebase / Google Services
-google-services.json
-firebase-debug.log
-
-# Misc
-*.log
-*.hprof
-*.lock
-*.DS_Store
-*.jks
-*.keystore
-
-# Coverage
-coverage/
-lcov.info
