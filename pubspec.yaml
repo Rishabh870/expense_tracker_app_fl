@@ -78,12 +78,7 @@ flutter:
     - lib/assets/images/otp2.png
     - lib/assets/animations/banner.json
 
-    - lib/assets/icons/IconShoppingCart.svg
-    - lib/assets/icons/IconMovie.svg
-    - lib/assets/icons/IconCar.svg
-    - lib/assets/icons/IconToolsKitchen2.svg
-    - lib/assets/icons/IconWallet.svg
-
+    - lib/assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

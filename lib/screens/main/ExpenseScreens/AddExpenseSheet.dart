@@ -63,13 +63,13 @@ void showCustomFormModal(BuildContext context) {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: const Color(0xFF4C6EF5),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                child: const Text("Submit", style: TextStyle(fontSize: 16)),
+                child: const Text("Submit", style: TextStyle(fontSize: 16,color: Colors.white)),
               ),
             ),
             const SizedBox(height: 20),

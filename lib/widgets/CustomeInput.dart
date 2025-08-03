@@ -26,7 +26,7 @@ class CustomInputField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
@@ -37,7 +37,7 @@ class CustomInputField extends StatelessWidget {
             hintText: hintText,
             suffixIcon: icon != null ? Icon(icon) : null,
             filled: true,
-            fillColor: Colors.grey.shade100,
+            fillColor: Colors.deepPurple.shade50,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

@@ -6,6 +6,7 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:expense_tracker_app_fl/screens/main/ExpenseScreen.dart';
 import 'package:expense_tracker_app_fl/screens/main/HomeScreen.dart';
 import 'package:expense_tracker_app_fl/screens/main/SettingScreen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,6 +17,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  late final PageController _pageController;
 
   final List<Widget> _screens = const [
     HomeScreen(),
@@ -24,11 +26,11 @@ class _MainScreenState extends State<MainScreen> {
     SettingScreen(),
   ];
 
-  final List<IconData> _icons = [
-    Icons.home_outlined,
-    Icons.list_alt_outlined,
-    Icons.money_outlined,
-    Icons.settings_outlined,
+  final List<String> _icons = [
+    'lib/assets/icons/IconLayoutDashboard.svg',
+    'lib/assets/icons/IconReceipt.svg',
+    'lib/assets/icons/IconCurrencyRupee.svg',
+    'lib/assets/icons/IconSettings.svg',
   ];
 
   final List<String> _labels = [
@@ -38,42 +40,91 @@ class _MainScreenState extends State<MainScreen> {
     'Setting',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
+
   void _onItemTapped(int index) {
     if (index != _selectedIndex) {
       setState(() => _selectedIndex = index);
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: _screens[_selectedIndex]),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50),
+        child: SafeArea(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _labels[_selectedIndex],
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Color(0xFF4C6EF5),
+                  child: Icon(Icons.person, size: 18, color: Colors.white),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: PageView(
+        controller: _pageController,
+        physics: const BouncingScrollPhysics(),
+        onPageChanged: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        children: _screens,
+      ),
       bottomNavigationBar: CurvedNavigationBar(
         items: List.generate(_icons.length, (index) {
           final isSelected = index == _selectedIndex;
           return CurvedNavigationBarItem(
-            child: Icon(
+            child: SvgPicture.asset(
               _icons[index],
-              color: isSelected ? Colors.white : Colors.black87,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                isSelected ? Colors.white : Colors.black,
+                BlendMode.srcIn,
+              ),
             ),
+            label: _labels[index],
             labelStyle: TextStyle(
-              color: isSelected ? Colors.black : Colors.grey,
-              fontWeight: FontWeight.w600,
-            ),
+                color: isSelected ? Colors.black : Colors.grey,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                fontSize: 10),
           );
         }),
         onTap: _onItemTapped,
         backgroundColor: Colors.transparent,
         color: Colors.white,
-        buttonBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
-        animationDuration: const Duration(milliseconds: 300),
+        buttonBackgroundColor: const Color(0xFF4C6EF5),
+        animationDuration: const Duration(milliseconds: 400),
         height: 60,
         index: _selectedIndex,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showCustomFormModal(context),
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFF4C6EF5),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
