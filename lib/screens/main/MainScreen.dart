@@ -6,6 +6,7 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:expense_tracker_app_fl/screens/main/ExpenseScreen.dart';
 import 'package:expense_tracker_app_fl/screens/main/HomeScreen.dart';
 import 'package:expense_tracker_app_fl/screens/main/SettingScreen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MainScreen extends StatefulWidget {
@@ -123,7 +124,7 @@ class _MainScreenState extends State<MainScreen> {
         index: _selectedIndex,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showCustomFormModal(context),
+        onPressed: () => showAddExpenseModal(context),
         backgroundColor: const Color(0xFF4C6EF5),
         child: const Icon(Icons.add, color: Colors.white),
       ),
