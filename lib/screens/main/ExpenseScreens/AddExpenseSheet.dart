@@ -1,9 +1,11 @@
-import 'package:expense_tracker_app_fl/models/Category.dart';
+import 'package:expense_tracker_app_fl/models/SplitUser.dart';
 import 'package:expense_tracker_app_fl/providers/category_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
+import '../../../models/Expense.dart';
+import '../../../providers/expense_provider.dart';
 import '../../../providers/split_users_provider.dart';
 import '../../../widgets/CustomDropdown.dart';
 import '../../../widgets/CustomeInput.dart';
@@ -22,9 +24,53 @@ class _AddExpenseFormState extends ConsumerState<AddExpenseForm> {
     Future.microtask(() {
       ref.read(categoryProvider.notifier).loadCategories();
       ref.read(splitUsersProvider.notifier).loadUsers();
-      //ref.read(fetchPeopleProvider.notifier).fetchPeople();
     });
   }
+
+  void addExpense() async {
+    final expenseState = ref.read(expenseProvider.notifier);
+
+    try {
+      final amount = double.tryParse(amountController.text) ?? 0.0;
+      final title = titleController.text.trim();
+      final date = dateController.text.trim();
+      final categoryId = int.tryParse(selectedCategory ?? '');
+      final payerId = int.tryParse(selectedPayer ?? '');
+      final splits = selectedPeople.map((e) {
+        final userId = int.tryParse(e) ?? 0;
+        final splitUser = SplitUser(id: userId, isSelf: false);
+        return SplitUserAmount(amount: amount/selectedPeople.length, person: splitUser);
+      }).toList();
+
+      if (title.isEmpty || amount <= 0 || categoryId == null || payerId == null || splits.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please fill all required fields")),
+        );
+        return;
+      }
+
+      final expense = CreateExpense(
+        title: title,
+        amount: amount,
+        date: date,
+        categoryId: categoryId,
+        payerId: payerId,
+        isSplit: true, splits: splits, // or false based on UI
+      );
+
+      expenseState.addExpense(expense);
+
+      if (!mounted) return;
+      Navigator.pop(context); // Close modal after success
+
+    } catch (e) {
+      print("Failed to add expense: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to add expense")),
+      );
+    }
+  }
+
 
   final titleController = TextEditingController();
   final amountController = TextEditingController();
@@ -195,7 +241,8 @@ class _AddExpenseFormState extends ConsumerState<AddExpenseForm> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      addExpense();
+                     // Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4C6EF5),

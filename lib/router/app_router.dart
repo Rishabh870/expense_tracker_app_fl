@@ -5,6 +5,8 @@ import 'package:expense_tracker_app_fl/screens/auth/RegisterScreen.dart';
 import 'package:expense_tracker_app_fl/screens/main/MainScreen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../screens/main/ExpenseScreens/ExpenseItemsPage.dart';
+
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/onboarding',
@@ -34,6 +36,15 @@ class AppRouter {
         name: 'main',
         builder: (context, state) => const MainScreen(),
       ),
+      GoRoute(
+        path: '/expense/:id/items',
+        name: 'expense_items',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '0') ?? 0;
+          return ExpenseItemsPage(expenseId: id);
+        },
+      ),
+
     ],
   );
 }

@@ -39,7 +39,7 @@ class Expense {
   final DateTime date;
   final List<SplitUserAmount> splits;
   final bool isSplit;
-  final DateTime createdAt;
+ // final DateTime createdAt;
   final Category? category;
 
   Expense({
@@ -52,7 +52,7 @@ class Expense {
     required this.date,
     required this.splits,
     required this.isSplit,
-    required this.createdAt,
+   // required this.createdAt,
     this.category,
   });
 
@@ -70,7 +70,7 @@ class Expense {
           .toList() ??
           [],
       isSplit: json['is_split'] ?? false,
-      createdAt: DateTime.parse(json['created_at']),
+     // createdAt: DateTime.parse(json['created_at']),
       category: json['category'] != null
           ? Category.fromJson(json['category'])
           : null,
@@ -88,8 +88,42 @@ class Expense {
       'date': date.toIso8601String(),
       'splits': splits.map((s) => s.toJson()).toList(),
       'is_split': isSplit,
-      'created_at': createdAt.toIso8601String(),
+      //'created_at': createdAt.toIso8601String(),
       'category': category,
     };
   }
+}
+
+
+class CreateExpense {
+  final int? userId;
+  final int? payerId;
+  final String title;
+  final double amount;
+  final int? categoryId;
+  final String date; // Format: "YYYY-MM-DD"
+  final List<SplitUserAmount> splits;
+  final bool isSplit;
+
+  CreateExpense({
+    this.userId,
+    this.payerId,
+    required this.title,
+    required this.amount,
+    this.categoryId,
+    required this.date,
+    this.splits = const [],
+    this.isSplit = false,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'user_id': userId,
+    'payer_id': payerId,
+    'title': title,
+    'amount': amount,
+    'category_id': categoryId,
+    'date': date,
+    'splits': splits.map((s) => s.toJson()).toList(),
+    'is_split': isSplit,
+  };
 }

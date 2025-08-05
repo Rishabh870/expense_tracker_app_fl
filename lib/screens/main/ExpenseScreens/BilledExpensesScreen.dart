@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../providers/expense_provider.dart';
 import '../../../widgets/ExpenseTile.dart';
+import 'ExpenseItemsPage.dart';
 
 class BilledExpensesScreen extends ConsumerWidget {
   const BilledExpensesScreen({super.key});
@@ -25,7 +27,17 @@ class BilledExpensesScreen extends ConsumerWidget {
             builder: (context, value, child) {
               return Opacity(opacity: value, child: child);
             },
-            child: ExpenseTile(expense: expense),
+            child: InkWell(
+              onTap: () {
+                context.pushNamed(
+                  'expense_items',
+                  pathParameters: {'id': expense.id.toString()},
+                );
+              },
+              child: ExpenseTile(expense: expense),
+            )
+
+            ,
           );
         },
       ),

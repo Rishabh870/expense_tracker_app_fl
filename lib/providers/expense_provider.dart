@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/Expense.dart';
 import '../services/expense_service.dart';
@@ -12,8 +14,15 @@ class ExpenseNotifier extends StateNotifier<List<Expense>> {
     state = expenses;
   }
 
-  void addExpense(Expense expense) {
-    state = [...state, expense];
+  Future<List<Expense>> getExpenseItems(Int id) async{
+    final expenseItems = await ExpenseService.fetchExpenses();
+
+    return expenseItems;
+  }
+  void addExpense(CreateExpense expense) async{
+    final resExpense = await ExpenseService.addExpense(expense);
+
+    state = [resExpense,...state];
   }
 
   void deleteExpense(String id) {
