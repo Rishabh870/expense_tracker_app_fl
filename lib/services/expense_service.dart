@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/Expense.dart';
@@ -31,12 +33,12 @@ class ExpenseService {
 
       throw Exception('Failed to add expenses');
     }
-
   }
+
   static Future<List<ExpenseItem>> fetchExpenseById(int id) async {
     try {
       final res = await privateDio.get('/expense-item/$id');
-  print(res.toString());
+
       return (res.data as List).map((e) => ExpenseItem.fromJson(e)).toList();
     } catch (e) {
       if (kDebugMode) {
@@ -47,4 +49,37 @@ class ExpenseService {
     }
   }
 
+  static Future<void> importBill(int id, PlatformFile file) async {
+    try {
+      // Convert PlatformFile to MultipartFile
+      final multipartFile = await MultipartFile.fromFile(
+        file.path!,
+        filename: file.name,
+      );
+
+      final formData = FormData.fromMap({
+        'file': multipartFile,
+      });
+
+      // Make POST request to your backend
+      final res = await privateDio.post(
+        '/expense-item/extract-bill/pdf/$id',
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
+      if (kDebugMode) {
+        print('Upload successful: ${res.statusCode}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error uploading file: $e');
+      }
+      throw Exception('Failed to upload file');
+    }
+  }
 }

@@ -27,7 +27,6 @@ class CustomDropdownField<T> extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         const SizedBox(height: 6),
         DropdownButtonFormField<T>(
-          value: value,
           isExpanded: true,
           icon: icon != null ? Icon(icon) : null,
           decoration: InputDecoration(

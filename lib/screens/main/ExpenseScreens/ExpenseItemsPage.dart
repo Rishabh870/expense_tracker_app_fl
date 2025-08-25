@@ -1,9 +1,12 @@
 import 'dart:ffi';
 import 'package:expense_tracker_app_fl/models/Expense.dart';
 import 'package:expense_tracker_app_fl/providers/expense_item_provider.dart';
+import 'package:expense_tracker_app_fl/services/expense_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import '../../../widgets/FilePickerWidget.dart';
 import '../../../widgets/ItemTile.dart';
 
 class ExpenseItemsPage extends ConsumerStatefulWidget {
@@ -48,9 +51,49 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
         .showSnackBar(const SnackBar(content: Text("Recalculating...")));
   }
 
+
+  void uploadFile(PlatformFile file) async {
+    try {
+      await ref
+          .read(expenseItemProvider.notifier)
+          .importExpenseBill(widget.expenseId, file);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('File uploaded successfully: ${file.name}')),
+      );
+
+      // Optionally, refresh the expense items after upload
+      await ref
+          .read(expenseItemProvider.notifier)
+          .loadExpensesItems(widget.expenseId);
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Upload failed: $e')),
+      );
+    }
+  }
+
+
   void handleImportBill() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("Import Bill clicked")));
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.7, // 70% of screen
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: FilePickerWidget(
+              onUpload: uploadFile,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void handleAddItem() {
