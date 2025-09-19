@@ -102,7 +102,7 @@ class CreateExpense {
   final double amount;
   final int? categoryId;
   final String date; // Format: "YYYY-MM-DD"
-  final List<SplitUserAmount> splits;
+  final List<SplitUserAmountCreate> split_users;
   final bool isSplit;
 
   CreateExpense({
@@ -112,7 +112,7 @@ class CreateExpense {
     required this.amount,
     this.categoryId,
     required this.date,
-    this.splits = const [],
+    this.split_users = const [],
     this.isSplit = false,
   });
 
@@ -123,7 +123,24 @@ class CreateExpense {
     'amount': amount,
     'category_id': categoryId,
     'date': date,
-    'splits': splits.map((s) => s.toJson()).toList(),
+    'split_users': split_users.map((s) => s.toJson()).toList(),
     'is_split': isSplit,
+  };
+}
+
+class SplitUserAmountCreate{
+  final int person;
+final double amount;
+final double paid;
+
+  SplitUserAmountCreate({
+  required this.person,
+  this.amount = 0,
+  this.paid = 0,
+});
+  Map<String, dynamic> toJson() => {
+    'person': person,
+    'amount': amount,
+    'paid': paid,
   };
 }

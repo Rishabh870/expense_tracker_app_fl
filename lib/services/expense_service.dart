@@ -49,6 +49,20 @@ class ExpenseService {
     }
   }
 
+  static Future<void> updateBulkItems(final data) async {
+    try {
+      final res = await privateDio.put('/expense-item/bulk-update',data: data);
+
+
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching expenses: $e');
+      }
+
+      throw Exception('Failed to load expenses');
+    }
+  }
+
   static Future<void> importBill(int id, PlatformFile file) async {
     try {
       // Convert PlatformFile to MultipartFile

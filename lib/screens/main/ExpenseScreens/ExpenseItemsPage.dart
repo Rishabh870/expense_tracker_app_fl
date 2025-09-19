@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import '../../../widgets/AssignToModal.dart';
 import '../../../widgets/FilePickerWidget.dart';
 import '../../../widgets/ItemTile.dart';
 
@@ -102,9 +103,57 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
   }
 
   void handleAssignTo() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("Assign To clicked")));
+    final items = ref.read(expenseItemProvider);
+
+    final selectedItems = selectedIndexes.map((i) => {
+      "id": items[i].id,
+      "expense_id": items[i].expenseId,
+    }).toList();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return AssignToModal(
+          selectedItems: selectedItems,
+          onConfirm: (personId) async {
+            try {
+
+
+              // Attach chosen personId to each selected item
+              final payload = {
+                'items': selectedItems,
+                "splits": personId.map((i) => {
+                  "person_id": i,
+                  "amount": 0,
+                }).toList(),  // ✅ force to list
+              };
+
+
+              await ExpenseService.updateBulkItems(payload);
+
+              ref.refresh(expenseItemProvider);
+
+              Navigator.pop(context); // close modal
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Items assigned successfully")),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Error: $e")),
+              );
+            }
+          },
+        );
+      },
+    );
   }
+
+
 
   String _calculateTotal(List<Expense> items) {
     final total = items.fold<double>(
@@ -156,9 +205,9 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Total: ₹500',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),

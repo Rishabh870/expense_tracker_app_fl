@@ -24,7 +24,7 @@ class AppRouter {
       GoRoute(
         path: '/register',
         name: 'register',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) => const MultiStepRegisterScreen(),
       ),
       GoRoute(
         path: '/otp',

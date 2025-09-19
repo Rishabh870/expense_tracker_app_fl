@@ -40,7 +40,7 @@ class _AddExpenseFormState extends ConsumerState<AddExpenseForm> {
       final splits = selectedPeople.map((e) {
         final userId = int.tryParse(e) ?? 0;
         final splitUser = SplitUser(id: userId, isSelf: false);
-        return SplitUserAmount(amount: amount/selectedPeople.length, person: splitUser);
+        return SplitUserAmountCreate(amount: amount/selectedPeople.length, person: userId);
       }).toList();
 
       if (title.isEmpty || amount <= 0 || categoryId == null || payerId == null || splits.isEmpty) {
@@ -56,7 +56,7 @@ class _AddExpenseFormState extends ConsumerState<AddExpenseForm> {
         date: date,
         categoryId: categoryId,
         payerId: payerId,
-        isSplit: true, splits: splits, // or false based on UI
+        isSplit: true, split_users: splits, // or false based on UI
       );
 
       expenseState.addExpense(expense);
