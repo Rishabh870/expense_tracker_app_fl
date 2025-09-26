@@ -6,7 +6,7 @@ class AppColors {
   static const Color secondary = Color(0xFF14B8A6); // Teal-500
 
   // 🎨 Backgrounds
-  static const Color background = Color(0xFFE3DDF2);
+  static const Color background = Color(0x00f2f2f2);
   static const Color cardBackground = Color(0xFFF9FAFB);
   static const Color surface = Color(0xFFF1F5F9);
 

@@ -1,3 +1,4 @@
+import 'package:expense_tracker_app_fl/providers/token_manager.dart';
 import 'package:expense_tracker_app_fl/screens/main/ExpenseScreens/AddExpenseSheet.dart';
 import 'package:expense_tracker_app_fl/screens/main/SettlementScreen.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +9,15 @@ import 'package:expense_tracker_app_fl/screens/main/HomeScreen.dart';
 import 'package:expense_tracker_app_fl/screens/main/SettingScreen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-class MainScreen extends StatefulWidget {
+import 'package:go_router/go_router.dart';
+class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  ConsumerState<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends ConsumerState<MainScreen> {
   int _selectedIndex = 0;
   late final PageController _pageController;
 
@@ -58,6 +59,89 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  // Logout function
+  Future<void> _logout() async {
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Logging out..."),
+            ],
+          ),
+        ),
+      );
+
+
+      await TokenManager.clearTokens();
+
+
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+
+      if (mounted) {
+        context.go('/login');
+      }
+    } catch (e) {
+      // Close loading dialog if it's open
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  // Show logout confirmation dialog
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.logout, color: Colors.red),
+              SizedBox(width: 8),
+              Text('Logout'),
+            ],
+          ),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _logout();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,8 +149,7 @@ class _MainScreenState extends State<MainScreen> {
         preferredSize: const Size.fromHeight(50),
         child: SafeArea(
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -77,11 +160,41 @@ class _MainScreenState extends State<MainScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Color(0xFF4C6EF5),
-                  child: Icon(Icons.person, size: 18, color: Colors.white),
-                )
+                Row(
+                  children: [
+                    // User Avatar
+
+                    const SizedBox(width: 8),
+                    // Logout Button
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'logout') {
+                          _showLogoutDialog();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.more_vert,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'logout',
+                          child: Row(
+                            children: [
+                              Icon(Icons.logout, color: Colors.red, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Logout',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -110,9 +223,10 @@ class _MainScreenState extends State<MainScreen> {
             ),
             label: _labels[index],
             labelStyle: TextStyle(
-                color: isSelected ? Colors.black : Colors.grey,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                fontSize: 10),
+              color: isSelected ? Colors.black : Colors.grey,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              fontSize: 10,
+            ),
           );
         }),
         onTap: _onItemTapped,
@@ -129,5 +243,11 @@ class _MainScreenState extends State<MainScreen> {
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 }

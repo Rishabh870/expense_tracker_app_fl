@@ -4,12 +4,14 @@ class CustomAvatar extends StatelessWidget {
   final String name;
   final double size;
   final double textSize;
+  final double borderRadius;
 
   const CustomAvatar({
     super.key,
     required this.name,
     this.size = 12,
     this.textSize = 24,
+    this.borderRadius = 100
   });
 
   String getInitials(String name) {
@@ -70,7 +72,7 @@ class CustomAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
