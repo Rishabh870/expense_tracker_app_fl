@@ -1,11 +1,14 @@
 import 'package:expense_tracker_app_fl/constant/colors.dart';
+import 'package:expense_tracker_app_fl/models/Dashboard.dart';
 import 'package:expense_tracker_app_fl/models/Expense.dart';
 import 'package:expense_tracker_app_fl/providers/category_providers.dart';
+import 'package:expense_tracker_app_fl/providers/dashboard_provider.dart';
 import 'package:expense_tracker_app_fl/providers/expense_provider.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -22,9 +25,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Load data when the screen initializes
     Future.microtask(() {
       try {
+        ref.read(dashboardProvider.notifier).loadDashboard();
         ref.read(expenseProvider.notifier).loadExpenses();
         ref.read(categoryProvider.notifier).loadCategories();
       } catch (e) {
@@ -37,6 +40,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final balanceOverview = ref.watch(dashboardProvider);
     final expenses = ref.watch(expenseProvider);
     final categoriesState = ref.watch(categoryProvider);
 
@@ -44,6 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: AppColors.background,
       body: RefreshIndicator(
         onRefresh: () async {
+          await ref.read(dashboardProvider.notifier).loadDashboard();
           await ref.read(expenseProvider.notifier).loadExpenses();
           await ref.read(categoryProvider.notifier).loadCategories();
         },
@@ -54,15 +59,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Welcome Section
-              _buildWelcomeSection(),
+              balanceOverview.when(
+                  data: (d) => _buildRemainingBalanceCard(
+                      remaining: d.remaining,
+                      allocated: d.netBudget,
+                      spent: d.totalSpent,actualRemaining: d.actualRemaining),
+                  error: (error, stack) =>
+                      _buildErrorWidget('Failed to load balance'),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator())),
               const SizedBox(height: 20),
 
               // Financial Overview Cards
-              _buildFinancialOverview(expenses),
-              const SizedBox(height: 24),
+              balanceOverview.when(
+                  data: (d) => _buildFinancialOverview(d),
+                  error: (error, stack) =>
+                      _buildErrorWidget('Failed to load Financial Overview'),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator())),
 
-              // Quick Actions
-              _buildQuickActions(context),
               const SizedBox(height: 24),
 
               // Recent Expenses
@@ -71,19 +86,147 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
               // Category Spending
               categoriesState.when(
-                data: (categories) => _buildCategorySpending(expenses, categories),
+                data: (categories) =>
+                    _buildCategorySpending(expenses, categories),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => _buildErrorWidget('Failed to load categories'),
+                error: (error, stack) =>
+                    _buildErrorWidget('Failed to load categories'),
               ),
               const SizedBox(height: 24),
-
-              // Settlement Overview
-              _buildSettlementOverview(),
-              const SizedBox(height: 20),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRemainingBalanceCard({
+    required double remaining,
+    required double allocated,
+    required double spent,
+    required double actualRemaining,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withOpacity(0.9),
+            AppColors.primary.withOpacity(0.7),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Remaining Balance',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                'Actual Balance',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 2),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '₹${remaining.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '₹${actualRemaining.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            spacing: 24,
+            children: [
+              _buildSmallBalanceItem(
+                label: 'Allocated',
+                amount: allocated,
+                icon: Icons.trending_down_outlined,
+                color: Colors.greenAccent,
+              ),
+              _buildSmallBalanceItem(
+                label: 'Spent',
+                amount: spent,
+                icon: Icons.trending_up,
+                color: Colors.redAccent,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallBalanceItem({
+    required String label,
+    required double amount,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: color, size: 18),
+        const SizedBox(width: 4),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              '₹${amount.toStringAsFixed(2)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -159,11 +302,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildFinancialOverview(List<Expense> expenses) {
-    final totalSpent = _calculateTotalSpent(expenses);
-    final monthlyExpenses = _calculateMonthlyExpenses(expenses);
-    final avgDaily = monthlyExpenses / DateTime.now().day;
-
+  Widget _buildFinancialOverview(BalanceOverview balance) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -180,39 +319,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Expanded(
               child: _buildFinancialCard(
-                'Total Spent',
-                '₹${totalSpent.toStringAsFixed(2)}',
-                Icons.trending_up,
-                AppColors.error,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildFinancialCard(
-                'This Month',
-                '₹${monthlyExpenses.toStringAsFixed(2)}',
-                Icons.calendar_today,
-                AppColors.secondary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildFinancialCard(
-                'Daily Average',
-                '₹${avgDaily.toStringAsFixed(2)}',
-                Icons.today,
+                'EMIs',
+                '₹${balance.emis.toStringAsFixed(2)}',
+                FontAwesomeIcons.bank,
                 AppColors.warning,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildFinancialCard(
-                'Pending',
-                '₹${_calculatePendingAmount(expenses).toStringAsFixed(2)}',
+                'Pending Settlements',
+                '₹${balance.pendingSettlements.toStringAsFixed(2)}',
                 Icons.pending_actions,
                 AppColors.info,
               ),
@@ -223,7 +340,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildFinancialCard(String title, String amount, IconData icon, Color color) {
+  Widget _buildFinancialCard(
+      String title, String amount, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -297,7 +415,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 'Add Expense',
                 Icons.add_circle_outline,
                 AppColors.primary,
-                    () {
+                () {
                   // Navigate to add expense
                   // This would trigger the floating action button functionality
                 },
@@ -309,7 +427,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 'View Reports',
                 Icons.analytics_outlined,
                 AppColors.secondary,
-                    () {
+                () {
                   // Navigate to reports
                 },
               ),
@@ -320,7 +438,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 'Settle Up',
                 Icons.handshake_outlined,
                 AppColors.success,
-                    () {
+                () {
                   // Navigate to settlement
                 },
               ),
@@ -331,7 +449,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionCard(
+      String title, IconData icon, Color color, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -450,9 +569,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               child: expense.category?.icon != null
                   ? SvgPicture.asset(
-                'lib/assets/icons/${expense.category!.icon}.svg',
-                colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              )
+                      'lib/assets/icons/${expense.category!.icon}.svg',
+                      colorFilter:
+                          const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    )
                   : const Icon(Icons.receipt, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 12),
@@ -492,7 +612,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCategorySpending(List<Expense> expenses, List<Category> categories) {
+  Widget _buildCategorySpending(
+      List<Expense> expenses, List<Category> categories) {
     try {
       final categorySpending = _calculateCategorySpending(expenses, categories);
 
@@ -542,10 +663,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       child: category.icon != null
                           ? SvgPicture.asset(
-                        'lib/assets/icons/${category.icon}.svg',
-                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                      )
-                          : const Icon(Icons.category, color: Colors.white, size: 20),
+                              'lib/assets/icons/${category.icon}.svg',
+                              colorFilter: const ColorFilter.mode(
+                                  Colors.white, BlendMode.srcIn),
+                            )
+                          : const Icon(Icons.category,
+                              color: Colors.white, size: 20),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -637,11 +760,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildSettlementItem('You Owe', '₹1,250.00', AppColors.error),
+                child: _buildSettlementItem(
+                    'You Owe', '₹1,250.00', AppColors.error),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: _buildSettlementItem('You\'re Owed', '₹850.00', AppColors.success),
+                child: _buildSettlementItem(
+                    'You\'re Owed', '₹850.00', AppColors.success),
               ),
             ],
           ),
@@ -750,7 +875,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final now = DateTime.now();
     return expenses
         .where((expense) =>
-    expense.date.year == now.year && expense.date.month == now.month)
+            expense.date.year == now.year && expense.date.month == now.month)
         .fold(0.0, (sum, expense) => sum + expense.amount);
   }
 
@@ -761,8 +886,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         .fold(0.0, (sum, expense) {
       try {
         final userSplit = expense.splits.firstWhere(
-              (split) => split.person.isSelf == true,
-          orElse: () =>  expense.splits.first,
+          (split) => split.person.isSelf == true,
+          orElse: () => expense.splits.first,
         );
         if (userSplit != null) {
           return sum + (userSplit.amount - userSplit.paid);
@@ -774,7 +899,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  Map<Category, double> _calculateCategorySpending(List<Expense> expenses, List<Category> categories) {
+  Map<Category, double> _calculateCategorySpending(
+      List<Expense> expenses, List<Category> categories) {
     final Map<Category, double> categorySpending = {};
 
     if (categories.isEmpty) return categorySpending;
@@ -783,7 +909,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       Category? category;
       try {
         category = categories.firstWhere(
-              (cat) => cat.id == expense.categoryId,
+          (cat) => cat.id == expense.categoryId,
         );
       } catch (e) {
         // If no matching category found, skip this expense or use a default
@@ -791,7 +917,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
 
       if (category != null) {
-        categorySpending[category] = (categorySpending[category] ?? 0) + expense.amount;
+        categorySpending[category] =
+            (categorySpending[category] ?? 0) + expense.amount;
       }
     }
 

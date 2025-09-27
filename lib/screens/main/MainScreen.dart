@@ -10,6 +10,9 @@ import 'package:expense_tracker_app_fl/screens/main/SettingScreen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
+import 'ExpenseScreens/AddBillReminderForm.dart';
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
@@ -20,6 +23,7 @@ class MainScreen extends ConsumerStatefulWidget {
 class _MainScreenState extends ConsumerState<MainScreen> {
   int _selectedIndex = 0;
   late final PageController _pageController;
+  bool isDialOpen = false;
 
   final List<Widget> _screens = const [
     HomeScreen(),
@@ -237,11 +241,36 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         height: 60,
         index: _selectedIndex,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showAddExpenseModal(context),
-        backgroundColor: const Color(0xFF4C6EF5),
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: const IconThemeData(
+        color: Colors.white, // sets the color of the animated icon
+        size: 24,            // optional: set icon size
       ),
+        backgroundColor: const Color(0xFF4C6EF5),
+        overlayOpacity: 0.1,
+        onOpen: () => setState(() => isDialOpen = true),
+        onClose: () => setState(() => isDialOpen = false),
+        children: [
+          SpeedDialChild(
+            child: const Icon(Icons.add, color: Colors.white),
+            label: 'Add Expense',
+            onTap: () => showAddExpenseModal(context),
+            backgroundColor: const Color(0xFF4C6EF5),
+            labelBackgroundColor: Colors.white,
+            labelStyle: const TextStyle(color: Colors.black),
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.receipt_long, color: Colors.white),
+            label: 'Add Bill Reminder',
+            onTap: () => showAddBillReminderModal(context),
+            backgroundColor: const Color(0xFF4C6EF5),
+            labelBackgroundColor: Colors.white,
+            labelStyle: const TextStyle(color: Colors.black),
+          ),
+        ],
+      ),
+
     );
   }
 
