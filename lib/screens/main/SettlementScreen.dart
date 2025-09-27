@@ -81,6 +81,43 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
       //   _showSnackBar('Storage permission denied', Colors.red);
       //   return File(""); // fallback empty file
       // }
+      bool status = false;
+
+      if (Platform.isAndroid) {
+        // For Android 13 (API 33+) and above
+        if (await Permission.manageExternalStorage.isGranted ||
+            await Permission.manageExternalStorage.request().isGranted) {
+          status = true;
+        }
+        // For Android 12 and below
+        else if (await Permission.storage.isGranted ||
+            await Permission.storage.request().isGranted) {
+          status = true;
+        }
+      } else {
+        status = true; // iOS doesn't need this
+      }
+
+      if (!status) {
+        _showSnackBar('Storage permission denied', Colors.red);
+        return File(""); // fallback empty file
+      }
+
+
+      // Pick proper directory for Downloads
+      Directory? downloadsDir;
+      if (Platform.isAndroid) {
+        downloadsDir = Directory('/storage/emulated/0/Download');
+        if (!downloadsDir.existsSync()) {
+          downloadsDir = await getExternalStorageDirectory();
+        }
+      } else if (Platform.isIOS) {
+        downloadsDir = await getApplicationDocumentsDirectory();
+      } else {
+        downloadsDir = await getTemporaryDirectory();
+      }
+
+
 
       // Download PDF from API
       final response = await privateDio.get(
@@ -89,9 +126,8 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
       );
 
       // Get storage directory
-      final directory = await getExternalStorageDirectory();
       final filePath =
-          '${directory!.path}/settlement_${settlement.person.name!.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+          '${downloadsDir!.path}/settlement_${settlement.person.name!.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf';
 
       // Save file
       final file = File(filePath);

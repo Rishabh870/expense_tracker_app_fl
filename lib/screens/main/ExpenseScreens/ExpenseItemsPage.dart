@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'package:expense_tracker_app_fl/models/Expense.dart';
 import 'package:expense_tracker_app_fl/providers/expense_item_provider.dart';
+import 'package:expense_tracker_app_fl/providers/expense_provider.dart';
 import 'package:expense_tracker_app_fl/services/expense_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import '../../../widgets/AssignToModal.dart';
 import '../../../widgets/FilePickerWidget.dart';
 import '../../../widgets/ItemTile.dart';
+import 'AddExpenseItemForm.dart';
 
 class ExpenseItemsPage extends ConsumerStatefulWidget {
   final int expenseId;
@@ -24,6 +26,9 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
   Set<int> selectedIndexes = {};
   bool isDialOpen = false;
 
+  Expense? currentExpenseData;
+
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +39,7 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
       setState(() {
         loading = false;
       });
+      _getExpenseSummary();
     });
   }
 
@@ -47,9 +53,15 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
     });
   }
 
-  void handleRecalculate() {
+  void handleRecalculate() async {
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("Recalculating...")));
+    await ref.read(expenseItemProvider.notifier).recalculateExpense(widget.expenseId);
+
+    ref.invalidate(expenseProvider);
+    _getExpenseSummary();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("Calculated")));
   }
 
 
@@ -98,8 +110,8 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
   }
 
   void handleAddItem() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("Add Item clicked")));
+    showAddExpenseItemModal(context, widget.expenseId);
+
   }
 
   void handleAssignTo() {
@@ -154,6 +166,18 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
   }
 
 
+  void _getExpenseSummary() async {
+    try {
+      final summary = await ExpenseService.expenseSummary(widget.expenseId);
+      setState(() {
+        currentExpenseData = summary;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to fetch summary: $e")),
+      );
+    }
+  }
 
   String _calculateTotal(List<Expense> items) {
     final total = items.fold<double>(
@@ -205,9 +229,9 @@ class _ExpenseItemsPageState extends ConsumerState<ExpenseItemsPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Total: ₹500',
-                        style: TextStyle(
+                      Text(
+                        'Total: ₹${currentExpenseData?.amount ?? 0}',
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),

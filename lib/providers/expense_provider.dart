@@ -36,7 +36,7 @@ class ExpenseNotifier extends StateNotifier<List<Expense>> {
     ];
   }
 
-// Optionally: add methods to sync with backend after each mutation
+
 }
 
 final expenseProvider = StateNotifierProvider<ExpenseNotifier, List<Expense>>(

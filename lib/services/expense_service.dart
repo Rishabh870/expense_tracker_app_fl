@@ -96,4 +96,46 @@ class ExpenseService {
       throw Exception('Failed to upload file');
     }
   }
+  
+  static Future<ExpenseItem> addItem(var item,int expenseId) async {
+    try {
+      final res = await privateDio.post('/expense-item/', data: item);
+
+      return ExpenseItem.fromJson(res.data);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error Adding expenses: $e');
+      }
+
+      throw Exception('Failed to add expenses');
+    }
+  }
+
+  static Future<List<ExpenseItem>> recalculate(int expenseId) async {
+    try {
+      final res = await privateDio.post('/expense/recalculate/$expenseId');
+
+      return (res.data as List).map((e) => ExpenseItem.fromJson(e)).toList();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error Adding expenses: $e');
+      }
+
+      throw Exception('Failed to add expenses');
+    }
+  }
+
+  static Future<Expense> expenseSummary(int expenseId) async {
+    try {
+      final res = await privateDio.get('/expense/summary/$expenseId');
+
+      return  Expense.fromJson(res.data);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error Adding expenses: $e');
+      }
+
+      throw Exception('Failed to add expenses');
+    }
+  }
 }

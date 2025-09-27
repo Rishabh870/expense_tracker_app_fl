@@ -4,6 +4,7 @@ import 'package:expense_tracker_app_fl/providers/token_manager.dart';
 // const String baseUrl = 'http://192.168.1.10:8000';
 //const String baseUrl = 'http://10.0.2.2:8000';
 //  const String baseUrl = 'http://192.168.29.209:8000';
+
   const String baseUrl = 'http://140.245.210.208'; //PRODUCTION
 
 final Dio publicDio = Dio(BaseOptions(baseUrl: baseUrl));

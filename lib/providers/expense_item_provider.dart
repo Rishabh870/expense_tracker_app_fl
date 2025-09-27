@@ -16,7 +16,25 @@ class ExpenseItemNotifier extends StateNotifier<List<ExpenseItem>> {
   Future<void> importExpenseBill(int id,PlatformFile file) async {
     await ExpenseService.importBill(id,file);
   }
-// Optionally: add methods to sync with backend after each mutation
+  Future<void> addExpenseItem(Map<String, dynamic> item, int expenseId) async {
+    try {
+      final newItem = await ExpenseService.addItem(item, expenseId);
+
+      state = [...state, newItem];
+    } catch (e) {
+      throw Exception('Failed to add expense item: $e');
+    }
+  }
+  Future<void> recalculateExpense(int expenseId) async {
+    try {
+      final newItem = await ExpenseService.recalculate(expenseId);
+
+      state = newItem;
+    } catch (e) {
+      throw Exception('Failed to add expense item: $e');
+    }
+  }
+
 }
 
 final expenseItemProvider =
