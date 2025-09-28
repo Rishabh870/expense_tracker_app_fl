@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class TokenManager {
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
-
+  static const _cycleIdKey = 'cycle_id';
   // You must keep this key secure and dynamic in real production
   static final _key = Key.fromUtf8('ejf89iju4rjij358'); // 16 chars ✅
   static final _iv = IV.fromUtf8('ejf89iju4rjij358'); // 16 bytes ✅
@@ -49,5 +49,16 @@ class TokenManager {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_accessTokenKey);
     await prefs.remove(_refreshTokenKey);
+  }
+
+
+  static Future<void> setCycleId(int cycleId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_cycleIdKey, cycleId);
+  }
+
+  static Future<int?> getCycleId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_cycleIdKey) ?? 0;
   }
 }

@@ -12,6 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
+import '../../providers/cycle_provider.dart';
 import 'ExpenseScreens/AddBillReminderForm.dart';
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -50,6 +51,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _selectedIndex);
+    ref.read(cycleProvider.notifier).checkOrCreateCycle();
   }
 
   void _onItemTapped(int index) {

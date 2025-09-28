@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:expense_tracker_app_fl/providers/token_manager.dart';
 
 // const String baseUrl = 'http://192.168.1.10:8000';
-//const String baseUrl = 'http://10.0.2.2:8000';
+// const String baseUrl = 'http://10.0.2.2:8000';
 //  const String baseUrl = 'http://192.168.29.209:8000';
 
   const String baseUrl = 'http://140.245.210.208'; //PRODUCTION
@@ -14,9 +14,10 @@ void setupDioInterceptors() {
   privateDio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) async {
       final token = await TokenManager.getAccessToken();
+      final cycleId = await TokenManager.getCycleId();
       if (token != null) {
         options.headers['Authorization'] = 'Bearer $token';
-        options.headers['x-cycle-id'] = 1;
+        options.headers['x-cycle-id'] = cycleId;
         //TODO -- MANAGE CURRENT CYCLE ID
 
       }
